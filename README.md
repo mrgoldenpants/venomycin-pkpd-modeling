@@ -62,7 +62,7 @@ Central-compartment concentration is calculated as:
 
 For an illustrative IV bolus dose, the initial conditions are:
 
-> **A₁(0) = Dose,   A₂(0) = 0**
+> **A₁(0) = Dose,   A₂(0) = 0**
 
 Differences in `CL`, `V1`, `V2`, and `Q` between patients produce different concentration-time profiles even when the same dose is administered.
 
@@ -70,7 +70,7 @@ Differences in `CL`, `V1`, `V2`, and `Q` between patients produce different conc
 
 <!-- FIGURE 1: Save the diagram as figures/two_compartment_model.png. -->
 
-![Two-compartment PK model](figures/twoo_compartment_model.png)
+![Two-compartment PK model](figures/two_compartment_model.png)
 
 **Figure 1.** Two-compartment pharmacokinetic model showing an IV input into the central compartment, systemic clearance `CL`, and bidirectional inter-compartmental exchange through `Q`.
 
@@ -172,7 +172,7 @@ Exposure can also be normalized by minimum inhibitory concentration:
 
 > **AUC₂₄/MIC**
 
-An illustrative AUC24/MIC target interval of **400-600** was used in the dosing and population-analysis portions of the project. These targets are included for computational demonstration and are not used here to provide patient-specific clinical recommendations.
+An illustrative AUC24/MIC target interval of **400-600** was used in the dosing and population-analysis portions of the project, assuming an MIC of **2 mg/L**. These targets are included for computational demonstration and are not used here to provide patient-specific clinical recommendations.
 
 ### 5. Global Sensitivity Analysis
 
@@ -221,7 +221,7 @@ The best multistart solution recovered the original parameters to numerical prec
 
 The best concentration RMSE was effectively:
 
-> **RMSE ≈ 0 mg/L**
+> **RMSE ≈ 1.47 × 10⁻¹⁴ mg/L** (across the four initializations, RMSE ranged from ~1.5×10⁻¹⁴ to ~1.8×10⁻¹⁰ mg/L)
 
 Not every initialization found the same solution. Two poorer starting conditions converged to higher-error, boundary-constrained parameter combinations despite reporting numerical convergence. This demonstrates why multistart fitting is useful: optimizer convergence alone does not guarantee that the best parameter solution has been identified.
 
@@ -235,7 +235,7 @@ Earlier sparse sampling also produced poor identification of `Q` and `V_2`. Addi
 
 **Figure 2.** Comparison between synthetic observed concentrations and model predictions from the fitted two-compartment pharmacokinetic model.
 
-For the original illustrative fitting dataset, the fitted model followed the observed concentration-time trend with an RMSE of approximately **0.543 mg/L**.
+For the original illustrative fitting dataset, the fitted model followed the observed concentration-time trend with an RMSE of approximately **0.542588 mg/L**.
 
 The separate controlled parameter-recovery experiment produced an essentially zero RMSE because the noise-free observations were generated from the same model structure and sampled sufficiently to recover the ground-truth parameters. These results serve different purposes: the first evaluates fit to the illustrative dataset, while the second is a controlled implementation-validation experiment.
 
@@ -283,7 +283,7 @@ The final sensitivity results were:
 
 Clearance was the dominant determinant of AUC0-24 variability, with:
 
-> **S₁(CL) = 0.834,   Sₜ(CL) = 0.950**
+> **S₁(CL) = 0.834,   Sₜ(CL) = 0.950**
 
 This indicates that clearance alone accounts for approximately 83% of the modeled output variance across the tested parameter ranges, while its total contribution including interactions is approximately 95%.
 
@@ -295,15 +295,17 @@ The same dosing regimen was evaluated across a heterogeneous virtual population.
 
 > **PTA = 44.5%**
 
-of virtual patients achieved the modeled AUC24 target interval:
+of virtual patients achieved the modeled target interval, assuming an MIC of **2 mg/L**:
 
-> **400 ≤ AUC₂₄ ≤ 600 mg·h/L**
+> **400 ≤ AUC₂₄/MIC ≤ 600**
 
 <!-- FIGURE 4: Save the distribution plot as figures/population_attainment.png. -->
 
 ![Population target attainment](figures/population_target_attainment.png)
 
 **Figure 4.** Distribution of simulated AUC24 values across the virtual population receiving the illustrative 1000 mg every 12 hours regimen, with the modeled target interval indicated.
+
+> **⚠ Needs verification before this is finalized.** The Methods section defines the target in AUC24/MIC terms (400-600, MIC = 2 mg/L), which corresponds to a raw AUC24 range of 800-1200 mg·h/L. Confirm directly in the population-simulation script which quantity is actually being histogrammed and compared against 400-600: (a) if the code computes AUC24/MIC before comparing, the x-axis and figure caption above should say "AUC24/MIC," not "AUC24" — and the axis values in the plotted figure should be verified to fall in a range consistent with a unitless ratio, not raw AUC24; or (b) if the code compares raw AUC24 directly against 400-600 without dividing by MIC, that's a units mismatch against your own stated target definition, and the 44.5%/53.3% attainment figures below would need to be recalculated against the correct 800-1200 mg·h/L raw-AUC24 range instead. Trace this before reporting these numbers as final — it changes what the headline percentages actually mean.
 
 Only **44.5%** of virtual patients receiving the 1000 mg every 12 hours regimen fell inside the modeled target interval. This demonstrates that administering the same dose to every patient does not produce the same exposure when pharmacokinetic parameters vary between individuals.
 
@@ -423,7 +425,7 @@ vancomycin-pkpd-modeling/
 │   ├── two_compartment_model.png
 │   ├── fitted_vs_observed.png
 │   ├── sobol_sensitivity.png
-│   └── population_attainment.png
+│   └── population_target_attainment.png
 ├── run_full_pipeline.py
 ├── requirements.txt
 ├── README.md
@@ -438,12 +440,12 @@ The `src/` directory contains reusable modeling components, `run_full_pipeline.p
 
 Place the following image files inside the top-level `figures/` directory:
 
-| Figure | Filename | Placement |
-|---|---|---|
-| Two-compartment diagram | `figures/two_compartment_model.png` | Mathematical Model section |
-| Fitted vs. observed plot | `figures/fitted_vs_observed.png` | Fitted vs. Observed Concentrations section |
-| Sobol sensitivity chart | `figures/sobol_sensitivity.png` | Global Sobol Sensitivity Analysis section |
-| AUC24 population distribution | `figures/population_attainment.png` | Population Target Attainment section |
+| Figure | Filename                                   | Placement |
+|---|--------------------------------------------|---|
+| Two-compartment diagram | `figures/two_compartment_model.png`        | Mathematical Model section |
+| Fitted vs. observed plot | `figures/fitted_vs_observed.png`           | Fitted vs. Observed Concentrations section |
+| Sobol sensitivity chart | `figures/sobol_sensitivity.png`            | Global Sobol Sensitivity Analysis section |
+| AUC24 population distribution | `figures/population_target_attainment.png` | Population Target Attainment section |
 
 The two-compartment diagram should contain the IV dose, central compartment `V_1`, peripheral compartment `V_2`, bidirectional exchange `Q`, and systemic clearance `CL`. It should not include `k_a` or an absorption compartment.
 
@@ -451,14 +453,16 @@ The fitted-versus-observed figure should show observed concentrations as points,
 
 The Sobol figure should be a grouped bar chart comparing `S_1` and `S_T` for each parameter using the final `N=2048` results.
 
-The population-attainment figure should show the virtual-population AUC24 distribution and visibly indicate the modeled 400-600 mg·h/L interval.
+The population-attainment figure should show the virtual-population AUC24 distribution and visibly indicate the modeled 400-600 mg·h/L interval (or 800-1200 mg·h/L, depending on the outcome of the units check flagged above).
 
 ---
 
 ## Author
 
-**Jackson Cornette**  
+**Jackson Cornette**
 Applied Mathematics — Biological Sciences emphasis
+
+Jackiecornette8@outlook.com
 
 ---
 
