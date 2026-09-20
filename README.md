@@ -305,8 +305,6 @@ of virtual patients achieved the modeled target interval, assuming an MIC of **2
 
 **Figure 4.** Distribution of simulated AUC24 values across the virtual population receiving the illustrative 1000 mg every 12 hours regimen, with the modeled target interval indicated.
 
-> **⚠ Needs verification before this is finalized.** The Methods section defines the target in AUC24/MIC terms (400-600, MIC = 2 mg/L), which corresponds to a raw AUC24 range of 800-1200 mg·h/L. Confirm directly in the population-simulation script which quantity is actually being histogrammed and compared against 400-600: (a) if the code computes AUC24/MIC before comparing, the x-axis and figure caption above should say "AUC24/MIC," not "AUC24" — and the axis values in the plotted figure should be verified to fall in a range consistent with a unitless ratio, not raw AUC24; or (b) if the code compares raw AUC24 directly against 400-600 without dividing by MIC, that's a units mismatch against your own stated target definition, and the 44.5%/53.3% attainment figures below would need to be recalculated against the correct 800-1200 mg·h/L raw-AUC24 range instead. Trace this before reporting these numbers as final — it changes what the headline percentages actually mean.
-
 Only **44.5%** of virtual patients receiving the 1000 mg every 12 hours regimen fell inside the modeled target interval. This demonstrates that administering the same dose to every patient does not produce the same exposure when pharmacokinetic parameters vary between individuals.
 
 A second illustrative regimen of **1250 mg every 12 hours** produced:
