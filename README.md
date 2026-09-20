@@ -70,7 +70,7 @@ Differences in `CL`, `V1`, `V2`, and `Q` between patients produce different conc
 
 <!-- FIGURE 1: Save the diagram as figures/two_compartment_model.png. -->
 
-![Two-compartment PK model](figures/two_compartment_model.png)
+![Two-compartment PK model](figures/twoo_compartment_model.png)
 
 **Figure 1.** Two-compartment pharmacokinetic model showing an IV input into the central compartment, systemic clearance `CL`, and bidirectional inter-compartmental exchange through `Q`.
 
